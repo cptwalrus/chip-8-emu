@@ -122,6 +122,7 @@ void Chip8::executeOp()
                     V[reg] = V[reg] ^ V[reg2];
                     break;
                 case 0x0004:
+                    //carry flag check
                     if(V[(reg2)] > (0xFF - V[reg]))
                     {
                         V[0xF] = 1;
@@ -133,6 +134,15 @@ void Chip8::executeOp()
                     V[reg] += V[reg2];
                     break;
                 case 0x0005:
+                    //carry flag check
+                    if(V[reg2] > V[reg])
+                    {
+                        V[0xF] = 1;
+                    }
+                    else
+                    {
+                        V[0xF] = 0;
+                    }
                     V[reg] -= V[reg2];
                     break;
                 case 0x0006:
