@@ -9,6 +9,11 @@ class Chip8
         Chip8();
 
         void emulateCycle();
+        
+        //graphics - Chip8 is just black and white/on off pixels
+        //  NOTE: Might be easier to implement a 2d array for this... will see when actually doing gfx
+        //  TEMP move to public as I test stuff and deside how I want this engineered
+        std::array<unsigned char, 64*32*4> gfx;
 
     private:
 
@@ -22,10 +27,6 @@ class Chip8
 
         //15 regsisters - 16th is carry register
         std::array<unsigned char, 16> V;
-
-        //graphics - Chip8 is just black and white/on off pixels
-        //  NOTE: Might be easier to implement a 2d array for this... will see when actually doing gfx
-        std::array<unsigned char, 64*32> gfx;
 
         std::array<unsigned char, 80> fontset;
 
