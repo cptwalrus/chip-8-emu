@@ -1,5 +1,7 @@
 #include "chip8.h"
 
+#include <array>
+
 
 unsigned char chip8_fontset[80] =
 { 
@@ -73,6 +75,21 @@ void Chip8::executeOp()
     switch (opcode & 0xF000)
     {
         case 0x0000:
+            switch (reg2) 
+            {
+                case 0x00E0:
+
+                    if ((opcode & 0x000F) = 0x000E) 
+                    {
+                        //perform return from subroutine
+                    }
+                    else 
+                    {
+                        clearGfx();
+                    }
+                default:
+                    pc = opcode & 0x0FFF;
+            }
             break;
         case 0x1000:
             pc = opcode & 0x0FFF;
@@ -183,4 +200,14 @@ void Chip8::executeOp()
     pc++;
 
 
+}
+
+void Chip8::clearGfx()
+{
+    std::fill_n(gfx, gfx.size(), 0);
+}
+
+void Chip8::draw(int x, int y, int height)
+{
+    
 }

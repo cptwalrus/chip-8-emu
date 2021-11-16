@@ -48,6 +48,9 @@ class Chip8
 
 
         void executeOp();
+        void clearGfx();
+
+        void draw(int x, int y, int height);
 
         
         
