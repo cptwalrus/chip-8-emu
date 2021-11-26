@@ -72,14 +72,16 @@ void Chip8::executeOp()
   
     int reg = opcode & 0x0F00 >> 8;
     int reg2 = opcode & 0x00F0 >> 4;
+    bool shouldIncPc = true;
     switch (opcode & 0xF000)
     {
         case 0x0000:
+        {
             switch (reg2) 
             {
                 case 0x00E0:
 
-                    if ((opcode & 0x000F) = 0x000E) 
+                    if ((opcode & 0x000F) == 0x000E) 
                     {
                         //perform return from subroutine
                     }
@@ -91,54 +93,80 @@ void Chip8::executeOp()
                     pc = opcode & 0x0FFF;
             }
             break;
+        }
         case 0x1000:
+        {
             pc = opcode & 0x0FFF;
+            shouldIncPc = false;
             break;
+        }
         case 0x2000:
+        {
             stack.push(pc);
             pc = opcode & 0x0FFF;
             break;
+        }
         case 0x3000:
+        {
             if(V[reg] == (opcode & 0x0FFF))
             {
                 pc++;
             }
             break;
+        }
         case 0x4000:
+        {
             if(V[reg] != (opcode & 0x0FFF))
             {
                 pc++;
             }
             break;
+        }
         case 0x5000:
+        {
             if(V[reg] == V[reg2])
             {
                 pc++;
             }
             break;
+        }
         case 0x6000:
+        {
             V[reg] = opcode & 0x00FF;
             break;
+        }
         case 0x7000:
+        {
             V[reg] += opcode & 0x00FF;
             break;
+        }
         case 0x8000:
+        {
             
             switch(opcode & 0x000F)
             {
                 case 0x0000:
+                {
                     V[reg] = V[reg2];
                     break;
+                }
                 case 0x0001:
+                {
                     V[reg] = V[reg] | V[reg2];
                     break;
+                }
                 case 0x0002:
+                {
                     V[reg] = V[reg] & V[reg2];
                     break;
+                }
                 case 0x0003:
+                {
                     V[reg] = V[reg] ^ V[reg2];
                     break;
+                }
                 case 0x0004:
+                {
                     //carry flag check
                     if(V[(reg2)] > (0xFF - V[reg]))
                     {
@@ -150,7 +178,9 @@ void Chip8::executeOp()
                     }
                     V[reg] += V[reg2];
                     break;
+                }
                 case 0x0005:
+                {
                     //carry flag check
                     if(V[reg2] > V[reg])
                     {
@@ -162,52 +192,141 @@ void Chip8::executeOp()
                     }
                     V[reg] -= V[reg2];
                     break;
+                }
                 case 0x0006:
+                {
                     break;
+                }
                 case 0x0007:
+                {
                     V[reg] = V[reg2] - V[reg];
                     break;
+                }
                 case 0x000E:
+                {
                     break;
+                }
 
                 default:
+                {
                     break;
+                }
+            
+                break;
             }
-            break;
+        }
         case 0x9000:
+        {
             break;
+        }
         case 0xA000:
+        {
             I = opcode & 0x0FFF;
             break;
+        }
         case 0xB000:
+        {
             pc = V[0] + (opcode & 0x0FFF);
             break;
+        }
         case 0xC000:
+        {
             break;
+        }
         case 0xD000:
+        {
+            //SCREEN STUFF
+            int height = opcode & 0x000F;
+            draw(V[reg], V[reg2], height);
             break;
+        }
         case 0xE000:
+        {
             break;
+        }
         case 0xF000:
+        {
             break;
-
+        }
         default:
+        {
             //UNK OPCODE
             // TODO: Use SFML to generate error here - or throw exception giving unk opcode
             break;
+        }
+
     }
-
-    pc++;
-
+    if (shouldIncPc)
+    {
+        pc++;
+    }
 
 }
 
 void Chip8::clearGfx()
 {
-    std::fill_n(gfx, gfx.size(), 0);
+    gfx.assign(gfx.size(), 0);
 }
 
 void Chip8::draw(int x, int y, int height)
 {
+    x = x & 64;
+    y = y & 32;
+
+    //start with no collisions
+    V[0xF] = 0;
+
+    unsigned char data = 0;
+
+    for( int row = x; row < row+height; row++)
+    {
+        data = memory[I + row];
+        for(int col = y; col < 8; col++)
+        {
+            for(int pixel = 0; pixel < 8; pixel++)
+            {
+
+                int screenPixel = col*4;
+                if(pixel == 1)
+                {
+                    if(gfx[row*screenWidth+screenPixel] == 255)
+                    {
+                        setPixel(row, screenPixel, 0);
+                        V[0xF] = 1;
+                    }
+                    else 
+                    {
+                        setPixel(row, screenPixel, 1);
+                    }
+                }
+                else 
+                {
+                    setPixel(row, screenPixel, 0);
+                }
+
+            }
+            
+        }
+
+    }
     
+}
+
+void Chip8::setPixel( int row, int pixel, int val)
+{
+    if (val == 1)
+        val = 255;
+
+    if(gfx[row*screenWidth+pixel] == val)
+    {
+        return;
+    }
+
+    for( int offset = 0; offset < 4; offset++)
+    {
+        if(gfx[row*screenWidth+pixel+offset] != val)
+        {
+            gfx[row*screenWidth+pixel+offset] = val;
+        }
+    }
 }

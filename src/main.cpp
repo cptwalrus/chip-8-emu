@@ -1,13 +1,29 @@
 #include "chip8.h"
 
 #include <SFML/Graphics.hpp>
+#include <fstream>
 
+#include <iostream>
 
 int main()
 {
+    //basically all of this code is filler code for testing...
+    
+    std::ifstream stream("src/ibmlogo.ch8", std::ios::binary);
+    if (!stream.is_open()) 
+    {
+        std::cout << "STREAM FAILED TO OPEN!" << std::endl;
+        return 1;
+    }
+
+
     sf::RenderWindow window(sf::VideoMode(64, 32), "Chip-8 Emu");
 
     Chip8 chip8;
+
+    auto size = stream.tellg();
+    stream.seekg(0);
+    stream.read(reinterpret_cast<char*>(&chip8.memory[0x200]), size);
 
     sf::Texture texture;
     texture.create(64, 32);
@@ -16,14 +32,6 @@ int main()
 
     while(window.isOpen())
     {
-        for(int pixel = 0; pixel < chip8.gfx.size(); pixel+=4)
-        {
-          chip8.gfx[pixel] = 255;
-          chip8.gfx[pixel+1] = 255;
-          chip8.gfx[pixel+2] = 255;
-          chip8.gfx[pixel+3] = 255;
-            
-        }
 
         texture.update(chip8.gfx.data());
 
