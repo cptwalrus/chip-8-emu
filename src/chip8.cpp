@@ -70,9 +70,11 @@ void Chip8::executeOp()
         return;
     }
   
-    int reg = opcode & 0x0F00 >> 8;
-    int reg2 = opcode & 0x00F0 >> 4;
+    int reg = (opcode & 0x0F00) >> 8;
+    int reg2 = (opcode & 0x00F0) >> 4;
     bool shouldIncPc = true;
+
+    auto tmp = (opcode & 0xF000);
     switch (opcode & 0xF000)
     {
         case 0x0000:

@@ -37,6 +37,7 @@ int main()
 
         window.draw(sprite);
 
+        chip8.emulateCycle();
         sf::Event event;
         while(window.pollEvent(event))
         {
