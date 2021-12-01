@@ -2,6 +2,9 @@
 
 #include <array>
 
+#include <signal.h>
+#include <iostream>
+#include <iomanip>
 
 unsigned char chip8_fontset[80] =
 { 
@@ -65,16 +68,12 @@ void Chip8::emulateCycle()
 void Chip8::executeOp()
 {
 
-    if( 0 == opcode )
-    {
-        return;
-    }
+    std::cout << std::hex << opcode << std::endl;
   
     int reg = (opcode & 0x0F00) >> 8;
     int reg2 = (opcode & 0x00F0) >> 4;
     bool shouldIncPc = true;
 
-    auto tmp = (opcode & 0xF000);
     switch (opcode & 0xF000)
     {
         case 0x0000:
@@ -237,6 +236,7 @@ void Chip8::executeOp()
         }
         case 0xD000:
         {
+            raise(SIGTRAP);
             //SCREEN STUFF
             int height = opcode & 0x000F;
             draw(V[reg], V[reg2], height);
