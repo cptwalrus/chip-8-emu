@@ -21,9 +21,12 @@ int main()
 
     Chip8 chip8;
 
+    stream.seekg(0, stream.end);
     auto size = stream.tellg();
-    stream.seekg(0);
+    stream.seekg(0, stream.beg);
     stream.read(reinterpret_cast<char*>(&chip8.memory[0x200]), size);
+
+    std::cout << "Reading in " << size << " from rom" << std::endl;
 
     sf::Texture texture;
     texture.create(64, 32);

@@ -46,6 +46,7 @@ void Chip8::emulateCycle()
     //fetch
     opcode = memory[pc] << 8 | memory[pc + 1];
 
+   // raise(SIGTRAP);
     //decode
     //execute
     executeOp();
@@ -260,7 +261,7 @@ void Chip8::executeOp()
     }
     if (shouldIncPc)
     {
-        pc++;
+        pc+=2;
     }
 
 }
